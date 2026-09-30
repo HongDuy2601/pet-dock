@@ -630,6 +630,8 @@ $('installTipClose').addEventListener('click', () => { S.installTipClosed = true
 
 // ---------- start ----------
 (async () => {
+  // offline support from the very first visit (before the welcome steps)
+  if ('serviceWorker' in navigator && location.protocol === 'https:' && !Native) navigator.serviceWorker.register('sw.js').catch(() => {});
   await PetStore.mergeInstalled().catch(() => {});
   if (!REAL_PETS.pets[S.petId]) S.petId = 'cat-orange';
   if (!S.onboarded) { startWelcome('owner'); return; }
@@ -643,5 +645,4 @@ $('installTipClose').addEventListener('click', () => { S.installTipClosed = true
     setTimeout(() => { pet.setState('happy', 1500); pet.say(phrase('hello'), 3500); }, 700);
   }
   setTimeout(checkAndroidUpdate, 20000);
-  if ('serviceWorker' in navigator && location.protocol === 'https:' && !Native) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();

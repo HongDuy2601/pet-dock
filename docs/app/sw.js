@@ -1,5 +1,5 @@
 // Offline support: the app shell is cached up front, pet photos the first time they're shown.
-const VERSION = '1.2.0-munjqfx7';
+const VERSION = '1.2.0-munk75s9';
 const SHELL = `petdock-shell-${VERSION}`;
 const PHOTOS = 'petdock-photos';
 const FILES = [
