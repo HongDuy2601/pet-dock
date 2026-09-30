@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Pet Dock</title>
+  <meta name="theme-color" content="#FFF3E6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Pet Dock">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <!-- ============ home: the pet's room ============ -->
+  <main id="home" class="screen">
+    <header class="topbar">
+      <button type="button" class="petname" id="petName"><span id="petNameText">Mochi</span> <span class="stage" id="stageTag"></span></button>
+      <div class="grow" id="growWrap" title="Bé đang lớn"><i id="growFill"></i></div>
+      <button type="button" class="icon-btn" id="openStore" aria-label="Nhà các bé">🛍️</button>
+      <button type="button" class="icon-btn" id="openSettings" aria-label="Cài đặt">⚙️</button>
+    </header>
+
+    <div id="installTip" class="install-tip hidden">
+      <span>📲 Thêm vào màn hình chính để dùng như app: bấm <b>Chia sẻ</b> <span class="share">⬆︎</span> → <b>Thêm vào MH chính</b></span>
+      <button type="button" id="installTipClose" aria-label="Đóng">✕</button>
+    </div>
+
+    <div id="focusBar" class="focus-bar hidden">
+      <span>🎯 Đang tập trung · còn <b id="focusLeft">25:00</b></span>
+      <button type="button" id="focusStop">Dừng</button>
+    </div>
+
+    <section id="room" class="room">
+      <div class="window"></div>
+      <div class="rug"></div>
+      <div class="breath hidden" id="breath"><div class="ring" id="ring"></div><p id="breathText">Hít vào…</p><button type="button" id="breathStop">Dừng</button></div>
+    </section>
+
+    <nav class="dock" id="dock">
+      <button type="button" data-do="water"><span>💧</span>Uống nước</button>
+      <button type="button" data-do="stretch"><span>🙆</span>Vươn vai</button>
+      <button type="button" data-do="breathe"><span>🌬️</span>Thở 1 phút</button>
+      <button type="button" data-do="vent"><span>✍️</span>Góc xả</button>
+      <button type="button" data-do="focus"><span>🎯</span>Tập trung</button>
+      <button type="button" data-do="feed"><span>🍗</span>Cho ăn</button>
+      <button type="button" data-do="overlay" class="hidden" id="overlayBtn"><span>🪟</span>Ra màn hình</button>
+    </nav>
+  </main>
+
+  <!-- ============ onboarding ============ -->
+  <section id="welcome" class="screen full hidden">
+    <div class="step on" data-step="owner">
+      <div class="hero-pets" id="heroPets"></div>
+      <h1>Chào bạn! 🐾</h1>
+      <p class="lead">Các bé ở Pet Dock sẽ ở bên bạn những ngày làm việc dài: nhắc uống nước, vươn vai, và ngồi cạnh khi bạn mệt.</p>
+      <label class="field">Các bé nên gọi bạn là gì?
+        <input id="ownerInput" maxlength="20" placeholder="Sen, Anh, Chị, Boss…" autocomplete="off">
+      </label>
+      <div class="chips" id="ownerChips"></div>
+      <button type="button" class="btn primary big" id="toChoose">Tiếp tục</button>
+    </div>
+    <div class="step" data-step="choose">
+      <h1>Chọn một bé nha 💛</h1>
+      <p class="lead" id="chooseLead">Các bé đang tranh nhau được bạn đón về đó!</p>
+      <div class="pick-grid" id="pickGrid"></div>
+      <button type="button" class="btn ghost" id="chooseStore">🛍️ Xem thêm bạn mới ở Nhà các bé</button>
+    </div>
+    <div class="step" data-step="meet">
+      <div class="meet-stage"><img id="meetImg" alt=""></div>
+      <h1 id="meetTitle"></h1>
+      <p class="pitch" id="meetPitch"></p>
+      <p class="note" id="babyNote">🌱 Bé về nhà còn là <b>con non</b>. Mỗi lần bạn uống nước, vươn vai, thở chậm… bé lớn thêm một chút.</p>
+      <label class="field">Đặt tên cho bé
+        <input id="petNameInput" maxlength="20" autocomplete="off">
+      </label>
+      <div class="row">
+        <button type="button" class="btn ghost" data-go="choose">← Chọn bé khác</button>
+        <button type="button" class="btn primary" id="adopt">Đón bé về 🏡</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ sheets ============ -->
+  <div id="scrim" class="scrim hidden"></div>
+
+  <section id="vent" class="sheet" aria-hidden="true">
+    <div class="grab"></div>
+    <h2>Có gì bực bội, kể bé nghe 🐾</h2>
+    <p class="hint">Viết thoải mái, không ai đọc đâu. Chữ không rời khỏi máy bạn. Xong thì vò tờ giấy cho bé ăn luôn.</p>
+    <div class="paper-stage">
+      <div id="paper" class="paper"><textarea id="ventText" placeholder="Hôm nay mình bực vì…"></textarea><div id="creases"></div></div>
+      <div id="paperBall" class="paper-ball"></div>
+      <div id="care" class="care">
+        <h3>Cảm ơn bạn đã nói ra 💛</h3>
+        <p>Nghe như bạn đang mang một nỗi đau rất lớn. Bạn không phải một mình đâu, và bạn xứng đáng được lắng nghe bởi một người thật.</p>
+        <div class="hotline">
+          Đường dây nóng <b>Ngày Mai · <a href="tel:0963061414">096 306 1414</a></b><br>
+          Miễn phí · 13h00–20h30, Thứ 4 đến Chủ Nhật<br>
+          Nếu bạn đang gặp nguy hiểm ngay lúc này, hãy gọi <b><a href="tel:115">115</a></b> hoặc nhờ người ở gần bạn.
+        </div>
+        <div class="row wrap">
+          <button type="button" class="btn primary" data-then="breathe">🌬️ Thở chậm cùng bé</button>
+          <button type="button" class="btn" data-then="sit">🐾 Ngồi cạnh bé</button>
+          <button type="button" class="btn link" data-then="overstated">Mình chỉ nói quá thôi</button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <button type="button" class="btn ghost" data-close>Để sau</button>
+      <button type="button" class="btn primary" id="ventEat" disabled>Vò cho bé ăn 🐾</button>
+    </div>
+  </section>
+
+  <section id="settings" class="sheet" aria-hidden="true">
+    <div class="grab"></div>
+    <h2>Cài đặt</h2>
+    <div class="group">
+      <div class="current" id="curPet"></div>
+      <button type="button" class="btn" id="changePet">Đổi bé khác</button>
+    </div>
+    <div class="group grid2">
+      <label class="field">Tên bé<input id="setName" maxlength="20"></label>
+      <label class="field">Bé gọi bạn là<input id="setOwner" maxlength="20"></label>
+    </div>
+    <div class="group">
+      <label class="label">Tuổi của bé</label>
+      <div class="seg" id="setAge">
+        <button type="button" data-v="grow">🌱 Lớn dần</button>
+        <button type="button" data-v="baby">🍼 Mãi bé con</button>
+        <button type="button" data-v="adult">🐾 Trưởng thành</button>
+      </div>
+      <p class="hint" id="growText"></p>
+    </div>
+    <div class="group">
+      <label class="toggle"><input type="checkbox" id="setWater"> Nhắc uống nước mỗi <input type="number" id="setWaterMin" min="10" max="240"> phút</label>
+      <label class="toggle"><input type="checkbox" id="setRest"> Nhắc vươn vai mỗi <input type="number" id="setRestMin" min="15" max="240"> phút</label>
+      <label class="toggle"><input type="checkbox" id="setChatter"> Thỉnh thoảng nói chuyện linh tinh</label>
+      <p class="hint" id="reminderHint"></p>
+    </div>
+    <div class="group" id="overlayGroup" hidden>
+      <label class="toggle"><input type="checkbox" id="setOverlay"> 🪟 Cho bé ra ngoài màn hình (bé đi dạo trên các app khác)</label>
+      <p class="hint">Android sẽ hỏi quyền “Hiển thị trên ứng dụng khác”. Bấm vào bé để mở lại Pet Dock.</p>
+    </div>
+    <p class="hint center">Pet Dock <b id="appVer"></b> · mọi thứ lưu trên máy bạn 🔒</p>
+    <button type="button" class="btn primary big" data-close>Xong</button>
+  </section>
+
+  <section id="store" class="sheet tall" aria-hidden="true">
+    <div class="grab"></div>
+    <h2>Nhà các bé 🏡</h2>
+    <p class="hint">Đón thêm bạn mới về máy, miễn phí. Gói của mỗi bé chỉ có ảnh và được kiểm tra trước khi vào máy.</p>
+    <div id="storeGrid" class="store-grid"></div>
+    <div id="storeEmpty" class="empty hidden"></div>
+    <button type="button" class="btn big" data-close>Đóng</button>
+  </section>
+
+  <script src="config.js"></script>
+  <script src="shared/pets.js"></script>
+  <script src="pets/manifest.js"></script>
+  <script src="shared/phrases.js"></script>
+  <script src="shared/feelings.js"></script>
+  <script src="shared/paper.js"></script>
+  <script src="store.js"></script>
+  <script src="pet-engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

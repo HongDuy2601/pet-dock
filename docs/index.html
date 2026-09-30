@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pet Dock</title>
+  <meta name="description" content="Thú cưng nhỏ sống trên màn hình, nhắc bạn uống nước, vươn vai và ở bên khi bạn mệt.">
+  <meta property="og:title" content="Pet Dock 🐾">
+  <meta property="og:description" content="Một bé thú cưng nhỏ trên màn hình, chăm bạn trong những ngày làm việc dài.">
+  <meta property="og:image" content="shelf.webp">
+  <link rel="icon" href="icon.png">
+  <style>
+    :root {
+      --bg: #FFF8F0; --card: #FFFFFF; --ink: #3A2E28; --muted: #8A7A70; --line: #F0E2D4;
+      --accent: #E8894A; --accent-ink: #FFFFFF; --soft: #FFF1E6; --ok-bg: #EAF6EC; --ok: #3F7A4A;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #221B17; --card: #2D2420; --ink: #F5E9DF; --muted: #BCA99B; --line: #43362F;
+        --accent: #F09A5E; --accent-ink: #231A15; --soft: #3A2C24; --ok-bg: #26382A; --ok: #9BD3A5;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #221B17; --card: #2D2420; --ink: #F5E9DF; --muted: #BCA99B; --line: #43362F;
+      --accent: #F09A5E; --accent-ink: #231A15; --soft: #3A2C24; --ok-bg: #26382A; --ok: #9BD3A5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font: 16px/1.6 -apple-system, "Segoe UI", "Helvetica Neue", Roboto, sans-serif;
+    }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+    header { display: flex; align-items: center; gap: 10px; padding: 18px 0; }
+    header img { width: 36px; height: 36px; border-radius: 9px; }
+    header b { font-size: 19px; }
+    header nav { margin-left: auto; display: flex; gap: 16px; font-size: 14px; }
+    header nav a { color: var(--muted); text-decoration: none; }
+    header nav a:hover { color: var(--ink); }
+
+    .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 36px; align-items: center; padding: 28px 0 44px; }
+    .hero h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.15; margin: 0 0 14px; letter-spacing: -.5px; }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero p.lead { font-size: 18px; color: var(--muted); margin: 0 0 22px; }
+    .hero .shot { border-radius: 22px; overflow: hidden; box-shadow: 0 18px 50px rgba(90, 55, 25, .18); }
+    .hero .shot img { display: block; width: 100%; height: auto; }
+    .dl { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 650; font-size: 16px;
+      padding: 12px 20px; border-radius: 14px; border: 1.5px solid var(--line); color: var(--ink); background: var(--card);
+      transition: transform .12s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+    .btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
+    .btn small { font-weight: 400; opacity: .85; font-size: 13px; }
+    .ver { font-size: 13.5px; color: var(--muted); margin-top: 12px; }
+
+    section { padding: 36px 0; }
+    h2 { font-size: 26px; margin: 0 0 6px; }
+    .sub { color: var(--muted); margin: 0 0 22px; }
+    .feats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .feat { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+    .feat .e { font-size: 28px; }
+    .feat h3 { margin: 6px 0 4px; font-size: 16.5px; }
+    .feat p { margin: 0; color: var(--muted); font-size: 14.5px; }
+
+    .pets { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .pet { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 12px; text-align: center; }
+    .pet .pic { height: 110px; display: flex; align-items: flex-end; justify-content: center; background: var(--soft); border-radius: 12px; margin-bottom: 8px; }
+    .pet .pic img { max-width: 85%; max-height: 100px; }
+    .pet b { display: block; }
+    .pet span { font-size: 13px; color: var(--muted); }
+    .empty { color: var(--muted); background: var(--card); border: 1px dashed var(--line); border-radius: 16px; padding: 22px; text-align: center; }
+
+    .steps { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .step { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+    .step h3 { margin: 0 0 8px; }
+    .step ol { margin: 0; padding-left: 20px; }
+    .step li { margin-bottom: 6px; }
+    code { background: var(--soft); border-radius: 6px; padding: 2px 6px; font-size: 13.5px; word-break: break-all; }
+    .note { background: var(--ok-bg); color: var(--ok); border-radius: 14px; padding: 12px 16px; font-size: 14.5px; margin-top: 14px; }
+
+    .news { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px 22px; }
+    .news ul { margin: 6px 0 0; padding-left: 20px; }
+    footer { color: var(--muted); font-size: 13.5px; text-align: center; padding: 30px 0 40px; }
+
+    @media (max-width: 820px) {
+      .hero { grid-template-columns: 1fr; gap: 24px; padding-top: 10px; }
+      .feats, .steps { grid-template-columns: 1fr; }
+      header nav { display: none; }
+      .btn { flex: 1 1 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img src="icon.png" alt="">
+      <b>Pet Dock</b>
+      <nav><a href="#be">Các bé</a><a href="#cai">Cách cài</a><a href="#moi">Có gì mới</a></nav>
+    </header>
+
+    <div class="hero">
+      <div>
+        <h1>Một bé thú cưng nhỏ<br>chăm <em>bạn</em> giữa giờ làm</h1>
+        <p class="lead">Bé đi dạo dưới đáy màn hình, nhắc bạn uống nước, vươn vai, thở chậm lại, và ngồi cạnh khi bạn mệt. Miễn phí, chạy hoàn toàn trên máy bạn.</p>
+        <div class="dl">
+          <a class="btn primary" id="dlMac" href="#cai" aria-disabled="true"> Tải cho Mac <small id="sizeMac"></small></a>
+          <a class="btn" id="dlWin" href="#cai" aria-disabled="true">⊞ Tải cho Windows <small id="sizeWin"></small></a>
+          <a class="btn" id="dlAnd" href="#cai" aria-disabled="true">🤖 Android <small id="sizeAnd"></small></a>
+          <a class="btn" id="openApp" href="app/">📱 iPhone / iPad</a>
+        </div>
+        <p class="ver" id="ver">Đang xem bản mới nhất…</p>
+      </div>
+      <div class="shot"><img src="shelf.webp" alt="Kệ các bé thú cưng của Pet Dock" width="1920" height="1080"></div>
+    </div>
+
+    <section>
+      <h2>Bé làm được gì?</h2>
+      <p class="sub">Nhẹ nhàng thôi, để bạn nhớ chăm cả chính mình.</p>
+      <div class="feats">
+        <div class="feat"><div class="e">💧</div><h3>Nhắc uống nước, vươn vai</h3><p>Làm xong thì đập tay với bé một cái. Bé biết khi bạn rời máy nên không nhắc vô duyên.</p></div>
+        <div class="feat"><div class="e">🫧</div><h3>Góc xả</h3><p>Viết điều đang nặng lòng, vò lại, cho bé ăn. Bé ngồi lại với bạn chứ không chạy đi.</p></div>
+        <div class="feat"><div class="e">🌱</div><h3>Bé lớn lên cùng bạn</h3><p>Mỗi lần bạn tự chăm mình, bé lớn thêm một chút. Không bao giờ bị trừ điểm.</p></div>
+        <div class="feat"><div class="e">🧹</div><h3>Bé quản gia</h3><p>Ngậm file đi cất, đẩy file vào sọt rác, tìm file giúp bạn. Luôn hỏi trước, hoàn tác được.</p></div>
+        <div class="feat"><div class="e">🎯</div><h3>Tập trung 25 phút</h3><p>Bé ngủ cạnh, không nói gì. Hết giờ bé vươn vai gọi bạn nghỉ.</p></div>
+        <div class="feat"><div class="e">💛</div><h3>Đưa bé nhà bạn lên</h3><p>Vài tấm ảnh chụp là bé nhà bạn đi dạo trên màn hình. Gửi được cho bạn bè.</p></div>
+      </div>
+    </section>
+
+    <section id="be">
+      <h2>Nhà các bé 🏡</h2>
+      <p class="sub">Có sẵn 14 bé trong app. Bạn mới dọn tới thì đón ngay trong app: menu 🐾 → <b>Nhà các bé</b>, không cần cài lại.</p>
+      <div class="pets" id="pets"></div>
+    </section>
+
+    <section id="cai">
+      <h2>Cách cài</h2>
+      <p class="sub">App làm cho bạn bè dùng nên chưa mua chứng nhận của Apple/Google/Microsoft. Lần đầu mở máy sẽ hỏi lại một chút, đừng lo nha.</p>
+      <div class="steps">
+        <div class="step">
+          <h3> Mac</h3>
+          <ol>
+            <li>Mở file <code>.dmg</code> vừa tải, kéo <b>Pet Dock</b> vào <b>Applications</b>.</li>
+            <li>Mở Pet Dock. Nếu máy chặn: <b>Cài đặt hệ thống → Quyền riêng tư &amp; Bảo mật</b> → kéo xuống bấm <b>Vẫn mở</b>.</li>
+            <li>Nếu báo “app bị hỏng”: mở Terminal, dán <code>xattr -cr "/Applications/Pet Dock.app"</code> rồi mở lại.</li>
+          </ol>
+        </div>
+        <div class="step">
+          <h3>⊞ Windows</h3>
+          <ol>
+            <li>Chạy file <code>Pet-Dock-Setup-….exe</code> vừa tải.</li>
+            <li>Nếu SmartScreen hiện màn hình xanh: bấm <b>Thông tin thêm</b> → <b>Vẫn chạy</b>.</li>
+            <li>Bé hiện ra ở đáy màn hình, icon 🐾 nằm cạnh đồng hồ.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="steps" style="margin-top:14px">
+        <div class="step">
+          <h3>🤖 Android</h3>
+          <ol>
+            <li>Tải file <code>Pet-Dock-….apk</code> trên điện thoại, bấm mở.</li>
+            <li>Nếu máy hỏi: cho phép <b>Cài ứng dụng không rõ nguồn gốc</b> cho trình duyệt → <b>Cài đặt</b>.</li>
+            <li>Muốn bé đi dạo trên các app khác: trong Pet Dock bấm <b>🪟 Ra màn hình</b> → bật <b>Hiển thị trên ứng dụng khác</b>.</li>
+          </ol>
+        </div>
+        <div class="step">
+          <h3>📱 iPhone / iPad</h3>
+          <ol>
+            <li>Mở <a href="app/">trang Pet Dock</a> bằng <b>Safari</b>.</li>
+            <li>Bấm nút <b>Chia sẻ</b> ⬆︎ → <b>Thêm vào MH chính</b>.</li>
+            <li>Mở Pet Dock từ màn hình chính như một app. Bé sống trong app (iPhone không cho bé chạy đè lên app khác), nhắc nhở khi bạn mở app.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="note">🔒 Bé không gửi gì từ máy bạn đi đâu cả. App chỉ hỏi thăm trang này mỗi ngày một lần để biết có bé mới hay bản mới (tắt được trong Cài đặt).</div>
+    </section>
+
+    <section id="moi">
+      <h2>Có gì mới</h2>
+      <div class="news" id="news"><span class="sub">Đang tải…</span></div>
+    </section>
+
+    <footer>Pet Dock · làm cho bạn bè, không bán, không quảng cáo 🐾</footer>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const esc = (t) => String(t == null ? '' : t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const mb = (n) => (n ? (n / 1048576).toFixed(0) + ' MB' : '');
+
+    fetch('latest.json', { cache: 'no-cache' }).then((r) => r.json()).then((l) => {
+      for (const [os, id] of [['mac', 'Mac'], ['win', 'Win'], ['android', 'And']]) {
+        const a = l[os];
+        if (!a || !a.url) continue;
+        $('dl' + id).href = a.url;
+        $('dl' + id).removeAttribute('aria-disabled');
+        $('size' + id).textContent = mb(a.size);
+      }
+      $('ver').textContent = `Bản ${l.version}${l.date ? ' · ' + l.date.split('-').reverse().join('/') : ''} · miễn phí`;
+      $('news').innerHTML = `<b>Pet Dock ${esc(l.version)}</b><ul>${(l.notes || []).map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`;
+      // put this visitor's own device first
+      const ua = navigator.userAgent;
+      const mine = /Android/.test(ua) ? 'dlAnd' : /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ? 'openApp' : /Win/.test(ua) ? 'dlWin' : 'dlMac';
+      document.querySelectorAll('.dl .btn').forEach((b) => b.classList.toggle('primary', b.id === mine));
+      $(mine).parentNode.prepend($(mine));
+    }).catch(() => {
+      $('ver').textContent = 'Bản cài sắp có, quay lại sau nha 🐾';
+      $('news').innerHTML = '<span class="sub">Chưa có bản phát hành nào.</span>';
+    });
+
+    fetch('catalog.json', { cache: 'no-cache' }).then((r) => r.json()).then((c) => {
+      const pets = c.pets || [];
+      $('pets').innerHTML = pets.length
+        ? pets.map((p) => `<div class="pet"><div class="pic"><img src="${esc(p.thumb)}" alt="" loading="lazy"></div><b>${esc(p.label)}</b><span>${esc(p.blurb)}</span></div>`).join('')
+        : '<div class="empty">Các bạn mới đang trên đường tới, sắp có rồi nè 🧺</div>';
+    }).catch(() => { $('pets').innerHTML = '<div class="empty">Các bạn mới đang trên đường tới, sắp có rồi nè 🧺</div>'; });
+  </script>
+</body>
+</html>
